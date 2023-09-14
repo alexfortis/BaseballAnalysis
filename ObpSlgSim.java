@@ -657,8 +657,8 @@ public class ObpSlgSim {
 	System.out.println();
 	System.out.println("Batting stats:");
 	double highObpOBP = highObp.getOBP(), highObpSLG = highObp.getSLG(), highSlgOBP = highSlg.getOBP(), highSlgSLG = highSlg.getSLG();
-	System.out.println("Team High OBP: " + highObp.getBA() + "/" + highObpOBP + "/" + highObpSLG + " (" + (highObpOBP + highObpSLG) + " OPS)");
-	System.out.println("Team High SLG: " + highSlg.getBA() + "/" + highSlgOBP + "/" + highSlgSLG + " (" + (highSlgOBP + highSlgSLG) + " OPS)");
+	System.out.println("Team High OBP: " + highObp.getBA() + "/" + highObpOBP + "/" + highObpSLG + " (" + (highObpOBP + highObpSLG) + " OPS), " + highObp.runs + " runs scored");
+	System.out.println("Team High SLG: " + highSlg.getBA() + "/" + highSlgOBP + "/" + highSlgSLG + " (" + (highSlgOBP + highSlgSLG) + " OPS), " + highSlg.runs + " runs scored");
     }
     
 }
