@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
  * This class simulates a 162-game baseball season for two different teams modeled after two different hitters.<br>
 These hitters have either the same or very similar OPS, but vastly different OBP and SLG from each other.<br>
 The purpose of this is to get a general idea of whether getting on base consistently or hitting for more power but less consistently is more important for scoring runs and winning.<br>
-As of the start of play on 9/13/2023, Rafael Devers (active) and Eddie Collins (HOF) both have an .853 career OPS, but Eddie Collins's OBP is .424 while Rafael Devers's is .342, which makes them a perfect pair.<br>
+As of the start of play on 9/13/2023, Rafael Devers (active) and Eddie Collins (HOF) both have an .853 career OPS, but Eddie Collins's OBP is .424 while Rafael Devers's is .343, which makes them a perfect pair.<br>
  */
 public class ObpSlgSim {
 
@@ -30,7 +30,16 @@ public class ObpSlgSim {
 	private int pa, k, oip, bbHbp, singles, doubles, triples, homers;
 	public List<Integer> outcomes;
 	private int[] thresholds;
-	
+	/**
+	 * @param paIn The number of plate appearances
+	 * @param kIn the number of strikeouts
+	 * @param oipIn The number of outs in play: PA - BB - HBP - SO - H
+	 * @param bbHbpIn The number of walks + hit-by-pitches
+	 * @param singlesIn The number of singles
+	 * @param doublesIn The number of doubles
+	 * @param triplesIn The number of triples
+	 * @param homersIn The number of home runs
+	 */
 	public Player(int paIn, int kIn, int oipIn, int bbHbpIn, int singlesIn, int doublesIn, int triplesIn, int homersIn) {
 	    pa = paIn;
 	    k = kIn;
@@ -51,7 +60,10 @@ public class ObpSlgSim {
 	    r = new Random();
 	    outcomes = new ArrayList<Integer>();
 	}
-
+	/**
+	 * Copy constructor.
+	 * @param other The player to copy
+	 */
 	public Player(Player other) {
 	    pa = other.pa;
 	    k = other.k;
@@ -66,7 +78,8 @@ public class ObpSlgSim {
 	    outcomes = new ArrayList<Integer>();
 	}
 
-	/* Gets the result of a given plate appearance.
+	/** Gets the result of a new plate appearance for this player based on pseudorandom number generation.
+	 * @return The number corresponding to the result of a new plate appearance.
 	 * 0: strikeout
 	 * 1: out in play
 	 * 2: walk or hit-by-pitch
@@ -87,11 +100,17 @@ public class ObpSlgSim {
 	    return -1;
 	}
 
+	/**
+	 * @return The unrounded on-base percentage of this player
+	 */
 	private double getRawOBP() {
 	    List<Integer> timesOnBase = outcomes.stream().filter(oc -> oc > 1).collect(Collectors.toList());
 	    return (double)timesOnBase.size()/outcomes.size();
 	}
 
+	/**
+	 * @return The unrounded slugging percentage of this player
+	 */
 	private double getRawSLG() {
 	    int tb = 0, ab = 0;
 	    for(int oc : outcomes) {
@@ -101,14 +120,23 @@ public class ObpSlgSim {
 	    return (double)tb/ab;
 	}
 
+	/**
+	 * @return The on-base percentage of this player, rounded to the nearest thousandth
+	 */
 	public double getOBP() {
 	    return (double)Math.round(1000 * getRawOBP())/1000;
 	}
 
+	/**
+	 * @return the slugging percentage of this player, rounded to the nearest thousandth
+	 */
 	public double getSLG() {
 	    return (double)Math.round(1000 * getRawSLG())/1000;
 	}
 
+	/**
+	 * @return the on-base plus slugging percentage of this player, rounded to the nearest thousandth
+	 */
 	public double getOPS() {
 	    return (double)Math.round(1000 * (getRawOBP() + getRawSLG()))/1000;
 	}
@@ -119,12 +147,20 @@ public class ObpSlgSim {
 	public int runs;
 	public final String name;
 	public int wins, losses;
+	/**
+	 * Creates a team with the given array of players and name.
+	 * @param players The players in their lineup order.
+	 * @param nameIn The name of the team.
+	 */
 	public Team(Player[] players, String nameIn) {
 	    name = nameIn;
 	    runs = 0;
 	    lineup = players;
 	}
 
+	/**
+	 * @return The number of total team plate appearances
+	 */
 	public int getPAs() {
 	    int pas = 0;
 	    for(Player p : lineup) {
@@ -133,6 +169,9 @@ public class ObpSlgSim {
 	    return pas;
 	}
 
+	/**
+	 * @return The number of total team at-bats
+	 */
 	public int getABs() {
 	    int abs = 0;
 	    for(Player p : lineup) {
@@ -142,6 +181,10 @@ public class ObpSlgSim {
 	    return abs;
 	}
 
+	/**
+	 * Gets the number of times a particular occurence occurred for a team (e.g. single, double, triple, home run)
+	 * @return The number of times the given occurrence occurred for this team
+	 */
 	private int getNumOccurrences(int outcome) {
 	    int count = 0;
 	    for(Player p : lineup) {
@@ -151,34 +194,58 @@ public class ObpSlgSim {
 	    return count;
 	}
 
+	/**
+	 * @return The number of collective strikeouts by this team
+	 */
 	public int getStrikeouts() {
 	    return getNumOccurrences(0);
 	}
 	
+	/**
+	 * @return The number of collective outs in play by this team
+	 */
 	public int getOutsInPlay() {
 	    return getNumOccurrences(1);
 	}
 
+	/**
+	 * @return The number of collective walks plus hit-by-pitches by this team
+	 */
 	public int getBbHbp() {
 	    return getNumOccurrences(2);
 	}
 
+	/**
+	 * @return The number of collective singles by this team
+	 */
 	public int getSingles() {
 	    return getNumOccurrences(3);
 	}
 
+	/**
+	 * @return The number of collective doubles by this team
+	 */
 	public int getDoubles() {
 	    return getNumOccurrences(4);
 	}
 
+	/**
+	 * @return The number of collective triples by this team
+	 */
 	public int getTriples() {
 	    return getNumOccurrences(5);
 	}
 
+	/**
+	 * @return The number of collective home runs by this team
+	 */
 	public int getHomers() {
 	    return getNumOccurrences(6);
 	}
 
+	/**
+	 * @return The number of collective times this team has reached base safely
+	 */
 	public int getTimesOnBase() {
 	    int count = 0;
 	    for(Player p : lineup) {
@@ -188,6 +255,9 @@ public class ObpSlgSim {
 	    return count;
 	}
 
+	/**
+	 * @return The number of collective hits by this team
+	 */
 	public int getHits() {
 	    int count = 0;
 	    for(Player p : lineup) {
@@ -197,6 +267,9 @@ public class ObpSlgSim {
 	    return count;
 	}
 
+	/**
+	 * @return The number of collective total bases by this team
+	 */
 	public int getTotalBases() {
 	    int tb = 0;
 	    for(Player p : lineup) {
@@ -206,28 +279,44 @@ public class ObpSlgSim {
 	    return tb;
 	}
 
+	/**
+	 * @return The collective batting average of this team
+	 */
 	public double getBA() {
 	    return (double)Math.round(1000 * (double)getHits()/getABs())/1000;
 	}
 
+	/**
+	 * @return The collective on-base percentage of this team
+	 */
 	public double getOBP() {
 	    return (double)Math.round(1000 * (double)getTimesOnBase()/getPAs())/1000;
 	}
 
+	/**
+	 * @return The collective slugging percentage of this team
+	 */
 	public double getSLG() {
 	    return (double)Math.round(1000 * (double)getTotalBases()/getABs())/1000;
 	}
 
+	/**
+	 * @return A String representing the win-loss record of this team
+	 */
 	public String getWL() {
 	    return wins + "-" + losses;
 	}
 
+	/**
+	 * @return The winning percentage of this team (wins / (wins + losses)), rounded to the nearest thousandth
+	 */
 	public double getWPCT() {
 	    double rawWpct = (double)wins/(wins+losses);
 	    return (double) Math.round(rawWpct * 1000)/1000;
 	}
     }
 
+    //To represent the result of a simulated inning
     private static class InningResult {
 	int runsScored, nextBatter;
 	public InningResult(int runsScoredIn, int nextBatterIn) {
@@ -236,6 +325,14 @@ public class ObpSlgSim {
 	}
     }
 
+    /**
+     * Simulates an inning.
+     * @param firstBatter The batter leading off this inning.
+     * @param team The batting team.
+     * @param canWalkOff Tells if there is a chance this inning could end without three outs being recorded. True iff the home team is batting in the 9th inning or later.
+     * @param downBy How many runs the batting team is trailing by. Only relevant if canWalkOff is true.
+     * @return An InningResult showing the number of runs scored in the inning and the batter leading off next inning.
+     */
     private static InningResult simInning(int firstBatter, Player[] team, boolean canWalkOff, int downBy) {
 	Random r = new Random();
 	int outs = 0;
@@ -561,6 +658,12 @@ public class ObpSlgSim {
 	return new InningResult(runs, curBatter);
     }
 
+    /**
+     * Simulates a game between two teams.
+     * @param awayTeam The away team (batting first).
+     * @param homeTeam The home team (batting second).
+     * @return An array containing the number of runs scored by the away team, the number of runs scored by the home team, and the number of innings played (if not 9).
+     */
     static int[] playGame(Team awayTeam, Team homeTeam) {
 	Player[] away = awayTeam.lineup, home = homeTeam.lineup;
 	int awayTeamRuns = 0, homeTeamRuns = 0;
@@ -621,8 +724,9 @@ public class ObpSlgSim {
     }
 
     public static void main(String[] args) {
+	//Eddie Collins, Rafael Devers
 	Player p1 = new Player(12087, 467, 6729, 1576, 2643, 438, 187, 47),
-	    p2 = new Player(3548, 734, 1600, 309, 508, 221, 7, 169);
+	    p2 = new Player(3614, 747, 1626, 322, 519, 221, 7, 172);
 	Player[] t1 = new Player[9], t2 = new Player[9];
 	for(int i = 0; i < 9; i++) {
 	    t1[i] = new Player(p1);
