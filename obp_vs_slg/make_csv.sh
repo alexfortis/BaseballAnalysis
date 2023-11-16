@@ -20,7 +20,7 @@ do
     read -d "/" obp_obp
     read -d " " obp_slg
     read -d "("
-    read -N 5 obp_ops
+    read -d " " -n 5 obp_ops
     read -d ","
     read obp_runs line
     read -d ":"
@@ -28,7 +28,7 @@ do
     read -d "/" slg_obp
     read -d " " slg_slg
     read -d "("
-    read -N 5 slg_ops
+    read -d " " -n 5 slg_ops
     read -d ","
     read slg_runs line
     echo "${season},${obp_w},${slg_w},${obp_ba},${obp_obp},${obp_slg},${obp_ops},${obp_runs},${slg_ba},${slg_obp},${slg_slg},${slg_ops},${slg_runs}"

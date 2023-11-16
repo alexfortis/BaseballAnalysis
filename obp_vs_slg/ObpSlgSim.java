@@ -3,22 +3,22 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
-//all stats here are as of the start of play on 9/13/2023
+//all stats here are as of the end of the 2023 season
 /**
  * This class simulates a 162-game baseball season for two different teams modeled after two different hitters.<br>
 These hitters have either the same or very similar OPS, but vastly different OBP and SLG from each other.<br>
 The purpose of this is to get a general idea of whether getting on base consistently or hitting for more power but less consistently is more important for scoring runs and winning.<br>
-As of the start of play on 9/13/2023, Rafael Devers (active) and Eddie Collins (HOF) both have an .853 career OPS, but Eddie Collins's OBP is .424 while Rafael Devers's is .343, which makes them a perfect pair.<br>
+Rafael Devers (active) and Eddie Collins (HOF) both have an .853 career OPS, but Eddie Collins's OBP is .424 while Rafael Devers's is .343, which makes them a perfect pair.<br>
  */
 public class ObpSlgSim {
 
     //the ratio of productive outs to total outs, currently the MLB league average in 2023
-    //Sacrifice flies are counted among these, so in this simulation they count against batting average.
-    public static final double productiveOutRatio = 3975.0/14869;
-    //the ratio of double plays to double play opportunities, currently the MLB league average in 2023
-    public static final double doublePlayRatio = 3122.0/30564;
-    //the ratio of infield singles to outfield singles, currently the MLB league average in 2023
-    public static final double infieldHitRatio = 4009.0/23373;
+    //Sacrifice flies are counted among these, so in this simulation they count against batting average and slugging percentage.
+    public static final double productiveOutRatio = 4456.0/16633;
+    //the ratio of double plays to double play opportunities, the MLB league average in 2023
+    public static final double doublePlayRatio = 3466.0/34097;
+    //the ratio of infield singles to outfield singles, the MLB league average in 2023
+    public static final double infieldHitRatio = 4480.0/26031;
 
     private static final boolean LOG_PAS = false;
     private static final boolean LOG_INNINGS = false;
