@@ -6,7 +6,7 @@ To get an idea of whether hitters should be valued for getting on base more ofte
 
 ## Usage
 
-If you just want a summary of the data, see [the Results section](#Results).
+If you just want a summary of the data, see [the Results section](#results).
 
 If you want the actual raw data, look at the files results.txt and results.csv. The TXT file uses English and is in a more human readable format, but the CSV is easier to process programmatically and analyze the data for a large number of simulations.
 
@@ -29,7 +29,7 @@ If you don't specify a number of times to run the simulation, it will run 100 ti
 
 This program simulates each game, play by play, over the course of a whole season. For simplicity, assume no errors, since hitters shouldn't be trying to reach on errors anyway, but I might look into adding it later if it's requested. The same goes for fielder's choices - they're more complicated to program/simulate in this fashion than the basic outcomes I put in. I used Java to write the main code and Bash scripts to run it many times in quick succession and gather all the data.
 
-The simulator takes two predetermined players ([more on them later](#Choosing the players)), creates lineups full of them, has them play each other 162 times, simulating each individual play of a baseball game. Most outcomes that are a direct result of batting are covered: strikeout, out in play (which is sometimes a productive out but sometimes a double play), walk/HBP, infield single, outfield single, double, triple, home run. For the sake of simplicity, sacrifice flies are counted as "productive outs" and thus decrease batting average and slugging percentage, unlike in real life. I may go back and change this if other people request it, but personally I don't think it makes that much of a difference.
+The simulator takes two predetermined players ([more on them later](#choosing-the-players)), creates lineups full of them, has them play each other 162 times, simulating each individual play of a baseball game. Most outcomes that are a direct result of batting are covered: strikeout, out in play (which is sometimes a productive out but sometimes a double play), walk/HBP, infield single, outfield single, double, triple, home run. For the sake of simplicity, sacrifice flies are counted as "productive outs" and thus decrease batting average and slugging percentage, unlike in real life. I may go back and change this if other people request it, but personally I don't think it makes that much of a difference.
 
 There are a few constants in the code: the productive out ratio, double play ratio, and the infield hit ratio. These are the MLB team averages in the 2023 season, from baseball-reference ([here](https://www.baseball-reference.com/leagues/majors/2023.shtml) and [here](https://www.baseball-reference.com/leagues/majors/2023-situational-batting.shtml)).
 
