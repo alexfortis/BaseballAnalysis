@@ -17,19 +17,26 @@ public class GetSmallestCoverageOfAllTeams {
 
     private static class PlayerComparator implements Comparator<Player> {
 	private Collection<Team> teamsToExclude;
+	private boolean reverse;
 	public PlayerComparator(Collection<Team> teamsToExcludeIn) {
+	    this(teamsToExcludeIn, false);
+	}
+	public PlayerComparator(Collection<Team> teamsToExcludeIn, boolean reverseIn) {
 	    teamsToExclude = teamsToExcludeIn;
+	    reverse = reverseIn;
 	}
 	public int compare(Player p1, Player p2) {
 	    int teamCountDiff = p1.teamsExcept(teamsToExclude).size() - p2.teamsExcept(teamsToExclude).size();
 	    if(0 == teamCountDiff) {
-		return p1.compareTo(p2);
+		return reverse ? p2.compareTo(p1) : p1.compareTo(p2);
 	    }
-	    return teamCountDiff;
+	    return reverse ? -teamCountDiff : teamCountDiff;
 	}
     }
 
-    public static List<Set<Player>> getSmallestSets(Set<Player> using, SortedSet<Player> available, int minSizeKnown) {
+    private static final PlayerComparator REVERSE_TEAM_COUNT = new PlayerComparator(new ArrayList<Team>(), true);
+
+    public static List<SortedSet<Player>> getSmallestSets(SortedSet<Player> using, SortedSet<Player> available, int minSizeKnown) {
 	if(available.size()>0 && using.size() < minSizeKnown) {
 	    System.err.print("Setting player #" + (using.size()+1) + " to " + available.last() + " (" + available.last().teams.size() + " teams)");
 	}
@@ -41,7 +48,7 @@ public class GetSmallestCoverageOfAllTeams {
 	   available.last().teams.size() == 0 ||
 	   //condition 3: the number of remaining player slots times the number of teams of the max available player is less than the number of teams remaining to cover
 	   ((minSizeKnown - using.size()) * available.last().teamsExcept(coveredTeams).size() + coveredTeams.size() < Team.getNumFranchises())) {
-	    return new ArrayList<Set<Player>>();
+	    return new ArrayList<SortedSet<Player>>();
 	}
 	if(coveredTeams.size() > Team.getNumFranchises()) {
 	    System.err.println("Impossible! You covered " + coveredTeams.size() + " teams, but there are only " + Team.getNumFranchises() + "!");
@@ -50,15 +57,15 @@ public class GetSmallestCoverageOfAllTeams {
 	}
 	//if this combination covers all 30 teams, then this is either tied for the smallest full coverage set of players, or a new smallest!
 	if(coveredTeams.size() == Team.getNumFranchises()) {
-	    List<Set<Player>> ret = new ArrayList<>();
-	    ret.add(new HashSet<Player>(using));
+	    List<SortedSet<Player>> ret = new ArrayList<>();
+	    ret.add(new TreeSet<Player>(using));
 	    return ret;
 	}
 	//if there are no players left to evaluate, it's done, and this track is finished!
 	if(0 == available.size()) {
-	    return new ArrayList<Set<Player>>();
+	    return new ArrayList<SortedSet<Player>>();
 	}
-	List<Set<Player>> playerses = new ArrayList<>();
+	List<SortedSet<Player>> playerses = new ArrayList<>();
 	Player p = available.last();
 	SortedSet<Player> newAvailableExcludingP = available.headSet(p);
 	using.add(p);
@@ -66,7 +73,7 @@ public class GetSmallestCoverageOfAllTeams {
 	PlayerComparator pc = new PlayerComparator(newTeams);
 	SortedSet<Player> newAvailableIncludingP = new TreeSet<>(pc);
 	newAvailableIncludingP.addAll(newAvailableExcludingP);
-	List<Set<Player>> smallestIncludingP = getSmallestSets(using, newAvailableIncludingP, minSizeKnown);
+	List<SortedSet<Player>> smallestIncludingP = getSmallestSets(using, newAvailableIncludingP, minSizeKnown);
 	using.remove(p);
 	if(smallestIncludingP.size() > 0) {
 	    int candidate = smallestIncludingP.get(0).size();
@@ -87,7 +94,7 @@ public class GetSmallestCoverageOfAllTeams {
 		}
 	    }
 	}
-	List<Set<Player>> smallestExcludingP = getSmallestSets(using, newAvailableExcludingP, minSizeKnown);
+	List<SortedSet<Player>> smallestExcludingP = getSmallestSets(using, newAvailableExcludingP, minSizeKnown);
 	if(smallestExcludingP.size() > 0) {
 	    int candidate = smallestExcludingP.get(0).size();
 	    if(candidate == minSizeKnown) {
@@ -193,11 +200,12 @@ public class GetSmallestCoverageOfAllTeams {
 	    allPlayers.addAll(hitters);
 	    allPlayers.addAll(pitchers);
 	    System.err.println(allPlayers.size() + " total players");
-	    List<Set<Player>> smallestCoverages = getSmallestSets(new HashSet<Player>(), allPlayers, MAX_PLAYERS);
+	    List<SortedSet<Player>> smallestCoverages = getSmallestSets(new TreeSet<Player>(REVERSE_TEAM_COUNT), allPlayers, MAX_PLAYERS);
 	    if(smallestCoverages.size() == 0) {
 		System.err.println("Cannot cover all 30 teams with " + MAX_PLAYERS + " players. Try a bigger number.");
 	    }
 	    else {
+		PlayerComparator reverseTeamCountOrder = new PlayerComparator(new ArrayList<Team>(), true);
 		int smallestSize = smallestCoverages.get(0).size();
 		//print the header
 		List<String> cols = new ArrayList<>(smallestSize);
@@ -206,7 +214,7 @@ public class GetSmallestCoverageOfAllTeams {
 		}
 		System.out.println(String.join("\t", cols));
 		//print each set of players
-		for(Set<Player> coverage : smallestCoverages) {
+		for(SortedSet<Player> coverage : smallestCoverages) {
 		    List<String> verbose = coverage.stream().map(p -> p.verboseString()).collect(Collectors.toList());
 		    System.out.println(String.join("\t", verbose));
 		}
