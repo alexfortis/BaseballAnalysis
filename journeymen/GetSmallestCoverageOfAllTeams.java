@@ -12,6 +12,8 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 public class GetSmallestCoverageOfAllTeams {
+    private static final boolean DEBUG = false;
+    private static final boolean VERBOSE = false;
     private static String hitterFileName = "journeyman_hitters.csv",
 	pitcherFileName = "journeyman_pitchers.csv";
 
@@ -37,8 +39,11 @@ public class GetSmallestCoverageOfAllTeams {
     private static final PlayerComparator REVERSE_TEAM_COUNT = new PlayerComparator(new ArrayList<Team>(), true);
 
     public static List<SortedSet<Player>> getSmallestSets(SortedSet<Player> using, SortedSet<Player> available, int minSizeKnown) {
-	if(available.size()>0 && using.size() < minSizeKnown) {
-	    System.err.print("Setting player #" + (using.size()+1) + " to " + available.last() + " (" + available.last().teams.size() + " teams)");
+	if(DEBUG && available.size()>0 && using.size() < minSizeKnown) {
+	    System.err.println("Setting player #" + (using.size()+1) + " to " + available.last() + " (" + available.last().teams.size() + " teams)");
+	}
+	else if(available.size()>0 && using.size()==0) {
+	    System.err.println("Now starting with " + available.last() + " (" + available.last().teams.size() + " teams); " + (available.size()-1) + " other player(s) remain");
 	}
 	Set<Team> coveredTeams = Player.getTeamsByPlayers(using);
 	//if there's no chance of at least tying the smallest full coverage group, backtrack
@@ -80,9 +85,11 @@ public class GetSmallestCoverageOfAllTeams {
 	    if(candidate <= minSizeKnown) {
 		playerses = smallestIncludingP;
 		if(candidate == minSizeKnown) {
-		    System.err.println("Tied the smallest known possible size: " + candidate);
-		    for(int i = 0; i < playerses.size(); i++) {
-			System.err.println(playerses.get(i));
+		    if(VERBOSE) {
+			System.err.println("Tied the smallest known possible size: " + candidate);
+			for(int i = 0; i < playerses.size(); i++) {
+			    System.err.println(playerses.get(i));
+			}
 		    }
 		}
 		else {
@@ -99,15 +106,19 @@ public class GetSmallestCoverageOfAllTeams {
 	    int candidate = smallestExcludingP.get(0).size();
 	    if(candidate == minSizeKnown) {
 		playerses.addAll(smallestExcludingP);
-		System.err.println("Tied the smallest known possible size: " + candidate);
-		for(int i = 0; i < playerses.size(); i++) {
-		    System.err.println(playerses.get(i));
+		if(VERBOSE) {
+		    System.err.println("Tied the smallest known possible size: " + candidate);
+		    for(int i = 0; i < playerses.size(); i++) {
+			System.err.println(playerses.get(i));
+		    }
 		}
 	    }
 	    else if(candidate < minSizeKnown) {
-		System.err.println("New smallest full coverage size: " + candidate);
-		for(int i = 0; i < playerses.size(); i++) {
-		    System.err.println(playerses.get(i));
+		if(VERBOSE) {
+		    System.err.println("New smallest full coverage size: " + candidate);
+		    for(int i = 0; i < playerses.size(); i++) {
+			System.err.println(playerses.get(i));
+		    }
 		}
 		minSizeKnown = candidate;
 		playerses = smallestExcludingP;
